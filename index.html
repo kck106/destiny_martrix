@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>데스티니 매트릭스 - 운명의 숫자 발견하기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'destiny-purple': '#6366f1',
+                        'destiny-navy': '#1e1b4b',
+                        'destiny-gold': '#f59e0b',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <!-- Header -->
+    <header class="relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-800/20 to-indigo-800/20"></div>
+        <div class="relative max-w-6xl mx-auto px-6 py-16 text-center">
+            <div class="mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 mb-6 shadow-2xl">
+                    <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"/>
+                        <path d="M19 12L19.74 14.09L22 15L19.74 15.91L19 18L18.26 15.91L16 15L18.26 14.09L19 12Z"/>
+                        <path d="M5 12L5.74 14.09L8 15L5.74 15.91L5 18L4.26 15.91L2 15L4.26 14.09L5 12Z"/>
+                    </svg>
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300 mb-4">
+                    데스티니 매트릭스
+                </h1>
+                <p class="text-xl md:text-2xl text-slate-300 font-light">
+                    당신의 운명의 숫자를 발견하세요
+                </p>
+            </div>
+            
+            <div class="max-w-2xl mx-auto text-slate-400 text-lg leading-relaxed">
+                <p class="mb-6">
+                    생년월일을 통해 당신만의 고유한 에너지와 삶의 과제, 
+                    그리고 숨겨진 재능을 알아보세요.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-6 pb-20">
+        <!-- Input Section -->
+        <section class="mb-12">
+            <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-2xl">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-white mb-4">생년월일을 입력해주세요</h2>
+                    <p class="text-slate-300">당신의 완전한 데스티니 매트릭스 차트를 생성합니다</p>
+                </div>
+                
+                <form id="birthdateForm" class="max-w-md mx-auto space-y-6">
+                    <div class="relative">
+                        <input 
+                            type="date" 
+                            id="birthdate" 
+                            name="birthdate"
+                            class="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent backdrop-blur-sm text-lg"
+                            required
+                            min="1900-01-01"
+                        >
+                        <div id="dateError" class="hidden text-red-400 text-sm mt-2 text-center font-medium"></div>
+                    </div>
+                    
+                    <button 
+                        type="submit"
+                        id="calculateBtn"
+                        class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    >
+                        데스티니 매트릭스 차트 생성하기
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="hidden">
+            <!-- Full Matrix Chart Visualization -->
+            <div class="mb-8">
+                <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-2xl">
+                    <h3 class="text-2xl font-bold text-white mb-6 text-center">완전한 데스티니 매트릭스 차트</h3>
+                    <div id="fullMatrixVisualization" class="flex items-center justify-center min-h-[400px]">
+                        <!-- SVG 차트가 여기에 동적으로 생성됩니다 -->
+                    </div>
+                    <div class="text-center mt-6">
+                        <div class="inline-flex flex-wrap gap-4 justify-center text-sm">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 rounded-full bg-purple-500 mr-2"></div>
+                                <span class="text-slate-300">핵심 에너지</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 rounded-full bg-amber-500 mr-2"></div>
+                                <span class="text-slate-300">주요 포인트</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 rounded-full bg-emerald-500 mr-2"></div>
+                                <span class="text-slate-300">관계 라인</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+                                <span class="text-slate-300">카르마 에너지</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Central Number Display -->
+            <div class="mb-8">
+                <div class="bg-gradient-to-br from-purple-500/20 to-indigo-500/20 backdrop-blur-lg rounded-3xl p-8 border border-purple-300/20 shadow-2xl text-center">
+                    <h3 class="text-2xl font-semibold text-purple-300 mb-4">당신의 가운데 숫자</h3>
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 mb-4 shadow-2xl">
+                        <span id="centralNumber" class="text-4xl font-bold text-white"></span>
+                    </div>
+                    <p class="text-slate-300 text-lg">
+                        이 숫자는 당신의 핵심 에너지와 삶의 과제를 나타냅니다
+                    </p>
+                    <div id="birthdateInfo" class="mt-2 text-slate-400 text-sm">
+                        <!-- 생년월일 정보가 여기에 표시됩니다 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Interpretation Section -->
+            <div id="interpretationSection" class="space-y-6 mb-8">
+                <!-- Personality & Talents -->
+                <div class="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 backdrop-blur-lg rounded-3xl p-8 border border-emerald-300/20 shadow-2xl opacity-0 transform translate-y-4 transition-all duration-600" data-animate="true">
+                    <h3 class="text-2xl font-bold text-emerald-300 mb-6 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        성격과 재능
+                    </h3>
+                    <div id="personalityContent" class="text-slate-300 leading-relaxed"></div>
+                </div>
+
+                <!-- Life Challenges -->
+                <div class="bg-gradient-to-br from-amber-500/20 to-orange-500/20 backdrop-blur-lg rounded-3xl p-8 border border-amber-300/20 shadow-2xl opacity-0 transform translate-y-4 transition-all duration-600" data-animate="true">
+                    <h3 class="text-2xl font-bold text-amber-300 mb-6 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        삶의 과제와 조언
+                    </h3>
+                    <div id="challengesContent" class="text-slate-300 leading-relaxed"></div>
+                </div>
+
+                <!-- Master Number Special -->
+                <div id="masterNumberSection" class="hidden bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-lg rounded-3xl p-8 border border-purple-300/20 shadow-2xl opacity-0 transform translate-y-4 transition-all duration-600" data-animate="true">
+                    <h3 class="text-2xl font-bold text-purple-300 mb-6 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"/>
+                        </svg>
+                        마스터 넘버의 특별한 의미
+                    </h3>
+                    <div id="masterNumberContent" class="text-slate-300 leading-relaxed"></div>
+                </div>
+            </div>
+
+            <!-- Premium Feature Introduction -->
+            <div class="mt-12">
+                <div class="bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-lg rounded-3xl p-8 border border-blue-300/20 shadow-2xl text-center">
+                    <h3 class="text-3xl font-bold text-blue-300 mb-4">✨ 당신의 운명, 더 깊이 탐험하세요! ✨</h3>
+                    <p class="text-slate-300 text-lg mb-6">
+                        가운데 숫자는 당신의 핵심 에너지입니다. 하지만 데스티니 매트릭스 전체 차트는 <br class="hidden md:inline">
+                        <strong>인생 경로, 숨겨진 재능, 관계 역학, 카르마적 과제</strong> 등 <br class="hidden md:inline">
+                        당신 삶의 모든 측면에 대한 놀라운 통찰을 담고 있습니다.
+                    </p>
+                    
+                    <ul class="text-left text-slate-300 text-base mb-8 space-y-3 inline-block">
+                        <li>✅ 인생의 큰 그림과 궁극적 사명</li>
+                        <li>✅ 아직 발견하지 못한 잠재력과 강점</li>
+                        <li>✅ 사랑과 관계에서 마주하는 에너지</li>
+                        <li>✅ 반복되는 어려움 뒤에 숨겨진 카르마</li>
+                        <li>✅ 재정, 경력, 건강에 대한 구체적인 통찰</li>
+                        <li>✅ 전체 22개 에너지 포인트 상세 분석</li>
+                    </ul>
+
+                    <div class="text-center">
+                        <button 
+                            id="goToPremiumBtn"
+                            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-10 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg text-xl"
+                        >
+                            프리미엄 심층 분석 시작하기
+                        </button>
+                    </div>
+                    <p class="text-slate-400 text-sm mt-4">
+                        * AI 기반 심층 분석으로 더욱 정확하고 개인화된 결과를 제공합니다
+                    </p>
+                </div>
+            </div>
+
+            <!-- Premium Analysis Results Section (Initially Hidden) -->
+            <div id="premiumAnalysisSection" class="hidden mt-12">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300 mb-4">
+                        프리미엄 심층 분석 결과
+                    </h2>
+                    <div class="flex justify-center items-center space-x-4 text-slate-300">
+                        <span>생년월일: <span id="premiumBirthdate">YYYY-MM-DD</span></span>
+                        <span class="text-purple-300">•</span>
+                        <span>가운데 숫자: <span id="premiumCentralNumber">8</span></span>
+                    </div>
+                </div>
+
+                <!-- Premium Analysis Content -->
+                <div id="premiumAnalysisContent" class="space-y-8">
+                    <!-- 분석 항목들이 여기에 동적으로 로드됩니다 -->
+                </div>
+            </div>
+
+            <!-- Share Image Section -->
+            <div class="mb-8">
+                <div class="bg-gradient-to-br from-pink-500/20 to-purple-500/20 backdrop-blur-lg rounded-3xl p-8 border border-pink-300/20 shadow-2xl">
+                    <h3 class="text-2xl font-bold text-pink-300 mb-6 text-center flex items-center justify-center">
+                        <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.05 4.11c-.05.23-.09.46-.09.7 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                        나만의 결과 이미지
+                    </h3>
+                    <p class="text-slate-300 text-center mb-6">
+                        당신의 데스티니 매트릭스 결과를 친구들과 공유해보세요
+                    </p>
+                    <div id="shareImageContainer" class="text-center">
+                        <!-- 공유 이미지가 여기에 동적으로 생성됩니다 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- General Share Section -->
+            <div class="text-center">
+                <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-2xl">
+                    <h3 class="text-2xl font-bold text-white mb-4">결과를 공유해보세요</h3>
+                    <p class="text-slate-300 mb-6">친구들과 함께 운명의 숫자를 발견해보세요</p>
+                    <button 
+                        id="shareButton"
+                        class="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    >
+                        결과 공유하기
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Animation -->
+        <div id="loadingSection" class="hidden text-center py-12">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 mb-4 animate-pulse">
+                <svg class="w-8 h-8 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+            <p id="loadingMessage" class="text-slate-300 text-lg">데스티니 매트릭스를 계산하고 있습니다...</p>
+        </div>
+
+        <!-- Premium Loading Section -->
+        <div id="premiumLoadingSection" class="hidden text-center py-12">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 mb-6">
+                <svg class="w-10 h-10 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-blue-300 mb-4">AI가 당신의 운명을 분석하고 있습니다</h3>
+            <p id="premiumLoadingMessage" class="text-slate-300 text-lg">전체 매트릭스 차트를 바탕으로 심층 분석 중입니다...</p>
+            <div class="mt-6 w-full max-w-md mx-auto bg-white/10 rounded-full h-2">
+                <div id="premiumProgressBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black/20 backdrop-blur-lg border-t border-white/10 py-8">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-slate-400">
+                © 2024 데스티니 매트릭스. 당신의 운명을 발견하는 여정
+            </p>
+        </div>
+    </footer>
+
+    <script src="share-image-generator.js"></script>
+    <script src="interpretations.js"></script>
+    <script src="destiny-matrix-calculator.js"></script>
+    <script src="matrix-visualization.js"></script>
+    <script src="premium-analysis.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

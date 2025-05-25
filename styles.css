@@ -1,0 +1,428 @@
+/* 데스티니 매트릭스 전용 스타일 (개선) */
+
+/* 기본 설정 및 성능 최적화 */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    scroll-behavior: smooth;
+}
+
+/* 커스텀 스크롤바 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.7);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.9);
+}
+
+/* 유리 모포이즘 효과 */
+.backdrop-blur-lg {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+/* 커스텀 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.8);
+    }
+}
+
+@keyframes shake {
+    0%, 20%, 40%, 60%, 80%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-3px);
+    }
+    15%, 35%, 55%, 75%, 95% {
+        transform: translateX(3px);
+    }
+}
+
+/* 헤더 텍스트 그라데이션 효과 */
+.text-transparent {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* 매트릭스 차트 스타일 */
+.matrix-chart {
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+/* 매트릭스 포인트 호버 효과 */
+.matrix-point {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.matrix-point:hover {
+    filter: brightness(1.2) drop-shadow(0 0 8px rgba(255,255,255,0.5));
+}
+
+.matrix-point.highlighted {
+    filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 215, 0, 0.8));
+    animation: pulse-glow 2s infinite;
+}
+
+/* 폼 입력 필드 개선 */
+input[type="date"] {
+    color-scheme: dark;
+    transition: all 0.3s ease;
+}
+
+input[type="date"]:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+    outline: none;
+    border-color: transparent;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* 오류 상태 스타일 */
+.border-red-500 {
+    border-color: #ef4444 !important;
+}
+
+.focus\:ring-red-500:focus {
+    --tw-ring-color: #ef4444;
+}
+
+/* 입력 필드 흔들기 애니메이션 */
+.shake-animation {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* 버튼 호버 효과 개선 */
+button {
+    transition: all 0.3s ease;
+    will-change: transform;
+}
+
+button:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+button:disabled:hover {
+    box-shadow: none;
+}
+
+/* 결과 섹션 페이드인 애니메이션 */
+#resultsSection:not(.hidden) {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* 로딩 애니메이션 개선 */
+#loadingSection:not(.hidden),
+#premiumLoadingSection:not(.hidden) {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* 해석 섹션 스태거 애니메이션 */
+#interpretationSection [data-animate="true"] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease-out;
+}
+
+#interpretationSection [data-animate="true"].animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 프리미엄 분석 섹션 애니메이션 */
+#premiumAnalysisContent > div {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease-out;
+}
+
+/* 공유 이미지 컨테이너 애니메이션 */
+#shareImageContainer img {
+    transition: all 0.5s ease-out;
+}
+
+/* 툴팁 스타일 */
+#matrix-tooltip {
+    pointer-events: none;
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+    z-index: 1000;
+}
+
+/* 임시 메시지 애니메이션 */
+#temporaryMessage {
+    transition: all 0.3s ease-out;
+}
+
+/* 반응형 디자인 개선 */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 3rem !important;
+    }
+    
+    .max-w-4xl {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* 매트릭스 차트 모바일 최적화 */
+    .matrix-chart {
+        height: auto;
+        max-width: 100%;
+    }
+    
+    /* 키워드 태그 모바일 레이아웃 */
+    .keyword-tags {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    /* 공유 이미지 버튼 모바일 레이아웃 */
+    #shareImageContainer .flex-col {
+        gap: 0.75rem;
+    }
+    
+    /* 텍스트 크기 조정 */
+    .text-5xl {
+        font-size: 2.5rem;
+    }
+    
+    .text-7xl {
+        font-size: 3.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    /* 더 작은 화면에서의 추가 조정 */
+    .text-3xl {
+        font-size: 1.5rem;
+    }
+    
+    .text-2xl {
+        font-size: 1.25rem;
+    }
+    
+    /* 패딩 조정 */
+    .p-8 {
+        padding: 1.5rem;
+    }
+    
+    /* 매트릭스 차트 텍스트 크기 조정 */
+    .matrix-chart text {
+        font-size: 10px;
+    }
+}
+
+/* 접근성 개선 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+    .bg-white\/10 {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .border-white\/20 {
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .text-slate-300 {
+        color: rgba(255, 255, 255, 0.9);
+    }
+}
+
+/* 움직임 줄이기 설정 지원 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .animate-spin,
+    .animate-pulse {
+        animation: none;
+    }
+}
+
+/* 프린트 스타일 */
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .bg-gradient-to-br,
+    .backdrop-blur-lg {
+        background: white !important;
+        backdrop-filter: none !important;
+    }
+    
+    button,
+    #shareImageContainer,
+    #premiumLoadingSection,
+    #loadingSection {
+        display: none !important;
+    }
+    
+    .shadow-2xl {
+        box-shadow: 0 0 0 1px #ccc !important;
+    }
+}
+
+/* Dark mode 스타일 (시스템 설정 기반) */
+@media (prefers-color-scheme: light) {
+    /* 라이트 모드에서는 기본 다크 테마 유지 */
+    body {
+        background: linear-gradient(135deg, #1e293b, #7c3aed, #1e293b);
+    }
+}
+
+/* 포커스 표시 개선 (접근성) */
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* 선택 텍스트 스타일 */
+::selection {
+    background-color: rgba(139, 92, 246, 0.3);
+    color: white;
+}
+
+/* 로딩 상태 스타일 */
+.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+/* 성공/오류 메시지 스타일 */
+.message-success {
+    background-color: #059669;
+}
+
+.message-error {
+    background-color: #dc2626;
+}
+
+.message-info {
+    background-color: #2563eb;
+}
+
+/* 커스텀 체크박스/라디오 (향후 확장용) */
+.custom-checkbox {
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.25rem;
+    background-color: transparent;
+    transition: all 0.2s ease;
+}
+
+.custom-checkbox:checked {
+    background-color: #6366f1;
+    border-color: #6366f1;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e");
+}
+
+/* 스크롤 영역 페이드 효과 */
+.scroll-fade-top::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(to bottom, rgba(30, 27, 75, 1), transparent);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.scroll-fade-bottom::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(to top, rgba(30, 27, 75, 1), transparent);
+    pointer-events: none;
+    z-index: 1;
+}
