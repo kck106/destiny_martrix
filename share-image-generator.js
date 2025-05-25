@@ -566,3 +566,4 @@ class ShareImageGenerator {
 
 // 전역으로 내보내기
 window.ShareImageGenerator = ShareImageGenerator;
+

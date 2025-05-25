@@ -171,3 +171,4 @@ document.addEventListener('DOMContentLoaded', () => {
 // 전역 함수로 내보내기
 window.getInterpretation = getInterpretation;
 window.getKeywords = getKeywords;
+

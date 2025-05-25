@@ -504,3 +504,4 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = new DestinyMatrixCalculator();
     // app.loadLastResult(); // 필요시 주석 해제
 });
+

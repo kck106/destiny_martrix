@@ -4,50 +4,35 @@ class CompleteDestinyMatrixCalculator {
         this.matrixData = null;
     }
 
-    // 숫자 축소 함수 (마스터 넘버 11, 22 유지)
+    // 숫자 축소 함수 (22 이하 유지, 22 초과만 자릿수 합산하여 22 이하로 만듦)
     reduceNumber(num) {
-        // 이미 마스터 넘버인 경우
-        if (num === 11 || num === 22) {
-            return num;
-        }
-        
-        // 1-9 범위인 경우
-        if (num >= 1 && num <= 9) {
-            return num;
-        }
-        
         // 0이거나 음수인 경우 (예외 처리)
         if (num <= 0) {
             console.warn(`Invalid number for reduction: ${num}`);
             return 1; // 기본값으로 1 반환
         }
         
-        // 10 이상인 경우 자릿수 합산
-        let result = num;
-        while (result > 9 && result !== 11 && result !== 22) {
-            let sum = 0;
-            const numStr = String(result);
-            for (let i = 0; i < numStr.length; i++) {
-                const digit = parseInt(numStr[i], 10);
-                if (isNaN(digit)) {
-                    console.warn(`Invalid digit in number: ${result}`);
-                    continue;
-                }
+        // 새로운 규칙: 숫자가 22 이하이면 그대로 반환 (1부터 22까지)
+        if (num >= 1 && num <= 22) {
+            return num;
+        }
+        
+        // 숫자가 22보다 큰 경우에만 자릿수 합산
+        let sum = 0;
+        const numStr = String(num);
+        for (let i = 0; i < numStr.length; i++) {
+            const digit = parseInt(numStr[i], 10);
+            if (!isNaN(digit)) { // Added check for safety
                 sum += digit;
-            }
-            result = sum;
-            
-            // 무한 루프 방지
-            if (result === 0) {
-                result = 1;
-                break;
             }
         }
         
-        return result;
+        // 자릿수 합산 결과에 대해 재귀적으로 reduceNumber 호출
+        // 합산 결과가 다시 22보다 클 수 있으므로 반복이 필요
+        return this.reduceNumber(sum); 
     }
 
-    // 자릿수 합산 함수
+    // 자릿수 합산 함수 (중간 계산에 사용)
     sumDigits(number) {
         if (typeof number !== 'number' || isNaN(number)) {
             console.warn(`Invalid input for sumDigits: ${number}`);
@@ -62,12 +47,11 @@ class CompleteDestinyMatrixCalculator {
 
     // 전체 매트릭스 계산
     calculateCompleteMatrix(birthdateString) {
-        // 입력 유효성 검사
+        // 입력 유효성 검사 (YYYY-MM-DD 형식 및 유효한 날짜)
         if (!birthdateString || typeof birthdateString !== 'string') {
             throw new Error('생년월일이 올바르지 않습니다.');
         }
 
-        // 날짜 형식 확인 (YYYY-MM-DD)
         const datePattern = /^\d{4}-\d{2}-\d{2}$/;
         if (!datePattern.test(birthdateString)) {
             throw new Error('날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)');
@@ -77,62 +61,64 @@ class CompleteDestinyMatrixCalculator {
             // 생년월일 파싱
             const [year, month, day] = birthdateString.split('-').map(Number);
             
-            // 날짜 유효성 추가 검증
-            if (year < 1900 || year > new Date().getFullYear()) {
-                throw new Error('연도가 유효하지 않습니다.');
-            }
-            if (month < 1 || month > 12) {
-                throw new Error('월이 유효하지 않습니다.');
-            }
-            if (day < 1 || day > 31) {
-                throw new Error('일이 유효하지 않습니다.');
-            }
-            
-            // 각 요소의 자릿수 합산
+            // 추가 날짜 유효성 검증 (script.js의 validateBirthdate와 일치해야 함)
+            const testDate = new Date(birthdateString);
+             if (isNaN(testDate.getTime()) || testDate.getFullYear() !== year || testDate.getMonth() + 1 !== month || testDate.getDate() !== day) {
+                 throw new Error('입력된 날짜가 유효하지 않습니다.');
+             }
+             if (year < 1900 || year > new Date().getFullYear()) {
+                 throw new Error('연도가 유효하지 않습니다. (1900년 이후)');
+             }
+
+            // 각 요소의 자릿수 합산 (중간값)
             const yearDigitsSum = this.sumDigits(year);
             const monthDigitsSum = this.sumDigits(month);
             const dayDigitsSum = this.sumDigits(day);
             
-            // 전체 자릿수 합산
+            // 전체 자릿수 합산 (중간값)
             const fullSumOriginal = yearDigitsSum + monthDigitsSum + dayDigitsSum;
             
-            // 핵심 포인트들 계산 (A1-A4)
-            const A1 = this.reduceNumber(dayDigitsSum);           // 생일 (상단 꼭지점)
-            const A2 = this.reduceNumber(monthDigitsSum);         // 생월 (좌측 꼭지점)
-            const A3 = this.reduceNumber(yearDigitsSum);          // 생년 (우측 꼭지점)
-            const A4 = this.reduceNumber(A1 + A2 + A3);           // 하단 꼭지점
+            // 핵심 포인트들 계산 (A1-A4) - 새로운 reduceNumber 규칙 적용
+            // A1: 생일 - 생일 자체 숫자에 reduceNumber 적용 (예: 10일 -> 10, 14일 -> 14)
+            const A1 = this.reduceNumber(day);           
+            // A2: 생월 - 생월 자체 숫자에 reduceNumber 적용 (예: 9월 -> 9)
+            const A2 = this.reduceNumber(month);         
+            // A3: 생년 - 생년의 자릿수 합에 reduceNumber 적용 (예: 1992 -> 21 -> 21)
+            const A3 = this.reduceNumber(yearDigitsSum);          
+            // A4: 하단 꼭지점 - A1, A2, A3 합에 reduceNumber 적용
+            const A4 = this.reduceNumber(A1 + A2 + A3);           
             
-            // 중앙 포인트 (P_Core) - 전체 합산 축소
+            // 중앙 포인트 (P_Core) - 전체 합산에 reduceNumber 적용
             const P_Core = this.reduceNumber(fullSumOriginal);
             
-            // 카르마 테일 - 생일 자릿수 합 + 전체 합의 축소 값
-            const KarmaTail = this.reduceNumber(dayDigitsSum + fullSumOriginal);
+            // 카르마 테일 - 생일과 전체 합의 합에 reduceNumber 적용
+            const KarmaTail = this.reduceNumber(day + fullSumOriginal);
             
-            // 내부 라인 포인트들 (L1-L4) - 이미 축소된 값들 사용
+            // 내부 라인 포인트들 (L1-L4) - 인접한 주요 포인트들 합산에 reduceNumber 적용
             const L1 = this.reduceNumber(A1 + P_Core);
             const L2 = this.reduceNumber(A2 + P_Core);
             const L3 = this.reduceNumber(A3 + P_Core);
             const L4 = this.reduceNumber(A4 + P_Core);
             
-            // 중간 포인트들 (M1-M4) - 인접한 주요 포인트들 합산
+            // 중간 포인트들 (M1-M4) - 인접한 주요 꼭지점들 합산에 reduceNumber 적용
             const M1 = this.reduceNumber(A1 + A2);
             const M2 = this.reduceNumber(A2 + A4);
             const M3 = this.reduceNumber(A4 + A3);
             const M4 = this.reduceNumber(A3 + A1);
             
-            // 세로 라인 포인트들 (V1-V4)
+            // 세로 라인 포인트들 (V1-V4) - 인접 포인트들 합산에 reduceNumber 적용
             const V1 = this.reduceNumber(A1 + L1);
             const V2 = this.reduceNumber(L1 + P_Core);
             const V3 = this.reduceNumber(P_Core + L4);
             const V4 = this.reduceNumber(L4 + A4);
             
-            // 가로 라인 포인트들 (H1-H4)
+            // 가로 라인 포인트들 (H1-H4) - 인접 포인트들 합산에 reduceNumber 적용
             const H1 = this.reduceNumber(A2 + L2);
             const H2 = this.reduceNumber(L2 + P_Core);
             const H3 = this.reduceNumber(P_Core + L3);
             const H4 = this.reduceNumber(L3 + A3);
 
-            // 매트릭스 데이터 구성 및 검증
+            // 매트릭스 데이터 구성
             const matrixData = {
                 birthdate: birthdateString,
                 year,
@@ -145,16 +131,16 @@ class CompleteDestinyMatrixCalculator {
                 M1, M2, M3, M4,
                 V1, V2, V3, V4,
                 H1, H2, H3, H4,
-                // 계산 중간값들
+                // 계산 중간값들 (디버깅 또는 분석용)
                 yearDigitsSum,
                 monthDigitsSum,
                 dayDigitsSum,
                 fullSumOriginal
             };
 
-            // 계산 결과 검증
+            // 계산 결과 유효성 검증
             if (!this.validateMatrixData(matrixData)) {
-                throw new Error('매트릭스 계산 결과에 오류가 있습니다.');
+                console.error('매트릭스 계산 결과에 예상치 못한 값이 포함되어 있습니다.', matrixData);
             }
 
             this.matrixData = matrixData;
@@ -166,9 +152,8 @@ class CompleteDestinyMatrixCalculator {
         }
     }
 
-    // 계산 결과 유효성 검증
+    // 계산 결과 유효성 검증 (1-22 범위 허용)
     validateMatrixData(data) {
-        // 모든 처리된 숫자가 올바른 범위에 있는지 확인
         const numbersToCheck = [
             'P_Core', 'A1', 'A2', 'A3', 'A4', 'KarmaTail',
             'L1', 'L2', 'L3', 'L4', 'M1', 'M2', 'M3', 'M4',
@@ -177,8 +162,8 @@ class CompleteDestinyMatrixCalculator {
 
         for (const numberKey of numbersToCheck) {
             const value = data[numberKey];
-            // 유효 범위: 1-9, 11, 22
-            if (!((value >= 1 && value <= 9) || value === 11 || value === 22)) {
+            // 유효 범위: 1-22 (새로운 규칙에 따름)
+            if (value < 1 || value > 22 || typeof value !== 'number' || isNaN(value)) {
                 console.error(`Invalid matrix value for ${numberKey}: ${value}`);
                 return false;
             }
@@ -193,15 +178,15 @@ class CompleteDestinyMatrixCalculator {
         return true;
     }
 
-    // 특별한 에너지 식별 (개선)
+    // 특별한 에너지 식별 (11, 22, 카르마 넘버)
     identifySpecialEnergies() {
         if (!this.matrixData) return {};
 
         const specialEnergies = {
-            masterNumbers: [],
-            karmaNumbers: [],
-            repeatingNumbers: {},
-            dominantEnergies: []
+            masterNumbers: [], // 11, 22
+            karmaNumbers: [], // 13, 14, 16, 19
+            repeatingNumbers: {}, // 1-22 범위 내 반복되는 숫자
+            dominantEnergies: [] // 3회 이상 나타나는 숫자 (1-22 범위)
         };
 
         // 모든 계산된 숫자 수집
@@ -230,7 +215,7 @@ class CompleteDestinyMatrixCalculator {
             }
         });
 
-        // 카르마 넘버 식별 (13, 14, 16, 19)
+        // 카르마 넘버 식별 (13, 14, 16, 19) - 이제 이 숫자들도 1-22 범위에 포함
         allNumbers.forEach((num, index) => {
             if ([13, 14, 16, 19].includes(num)) {
                 specialEnergies.karmaNumbers.push({
@@ -241,9 +226,11 @@ class CompleteDestinyMatrixCalculator {
             }
         });
 
-        // 반복되는 숫자 카운트
+        // 반복되는 숫자 카운트 (1-22 범위)
         allNumbers.forEach(num => {
-            specialEnergies.repeatingNumbers[num] = (specialEnergies.repeatingNumbers[num] || 0) + 1;
+            if(num >= 1 && num <= 22) {
+                specialEnergies.repeatingNumbers[num] = (specialEnergies.repeatingNumbers[num] || 0) + 1;
+            }
         });
 
         // 지배적인 에너지 식별 (3회 이상 나타나는 숫자)
@@ -260,7 +247,7 @@ class CompleteDestinyMatrixCalculator {
         return specialEnergies;
     }
 
-    // 포지션 의미 매핑 (확장)
+    // 포지션 의미 매핑
     getPositionMeaning(position) {
         const meanings = {
             'P_Core': '핵심 자아, 컴포트 존',
@@ -289,8 +276,8 @@ class CompleteDestinyMatrixCalculator {
         
         return meanings[position] || '알 수 없는 위치';
     }
-
-    // 주요 라인 계산 (개선)
+    
+    // 주요 라인 계산
     calculateMajorLines() {
         if (!this.matrixData) return {};
 
@@ -339,7 +326,7 @@ class CompleteDestinyMatrixCalculator {
         };
     }
 
-    // GPT 분석용 데이터 준비 (확장)
+    // GPT 분석용 데이터 준비
     prepareGPTAnalysisData() {
         if (!this.matrixData) return null;
 

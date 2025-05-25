@@ -641,3 +641,4 @@ ${isSpecial ? '⭐ 이것은 특별한 에너지 숫자입니다!' : ''}
 
 // 전역으로 내보내기
 window.MatrixVisualization = MatrixVisualization;
+
